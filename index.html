@@ -25,9 +25,10 @@
     <main>
         <section class="hero">
             <div class="container">
-                <div class="centered-logo">
-                    <img src="https://t3.ftcdn.net/jpg/11/47/69/48/360_F_1147694847_TIONF9o1e27jxFntLGcJxsqhRIoA14O4.jpg" alt="Smart Lock Logo">
-                </div>
+                <div class="container">
+                    <div class="centered-logo">
+                        <img src="https://t3.ftcdn.net/jpg/11/47/69/48/360_F_1147694847_TIONF9o1e27jxFntLGcJxsqhRIoA14O4.jpg" alt="Smart Lock Logo">
+                    </div>
                 <h1>Smart Locker System</h1>
                 <p class="tagline">A secure and intelligent approach to personal storage using the CC3200 microcontroller</p>
                 <a href="demo.html" class="cta-button">View Demo <i class="fas fa-arrow-right"></i></a>
@@ -35,9 +36,8 @@
         </section>
 
         <section class="description">
-            <div class="container">
                 <h2>Project Overview</h2>
-                <p>In today's world, securing personal belongings in shared spaces is a growing concern. Our Smart Locker System provides a secure, efficient, and modernized approach to personal storage using the CC3200 microcontroller. This system enables users to lock and unlock a storage unit using an IR remote, ensuring seamless authentication and access. To add a connected element, the locker system integrates with AWS IoT to track usage and provide real-time status updates.</p>
+                <p>Our project is a secure access control system designed to authenticate users using a combination of a keypad and an RFID scanner. The system is built around the CC3200 microcontroller and features an OLED display for user interaction, a servo motor for door locking and unlocking, and a buzzer for audio feedback. The system aims to provide a standalone, interactive, and efficient method of entry authentication.</p>
                 
                 <div class="features">
                     <div class="feature-card">
@@ -45,7 +45,7 @@
                             <i class="fas fa-shield-alt"></i>
                         </div>
                         <h3>Secure Authentication</h3>
-                        <p>Uses IR remote signals for secure access authentication with error handling for invalid attempts.</p>
+                        <p>Uses PIN-based authentication through a keypad with masked input display and error handling for invalid attempts.</p>
                     </div>
                     <div class="feature-card">
                         <i class="fas fa-bolt"></i>
@@ -55,7 +55,7 @@
                     <div class="feature-card">
                         <i class="fas fa-cloud"></i>
                         <h3>AWS IoT Integration</h3>
-                        <p>Real-time monitoring and status updates through cloud connectivity.</p>
+                        <p>Designed for real-time status notifications through cloud connectivity (partially implemented).</p>
                     </div>
                 </div>
             </div>
@@ -67,12 +67,13 @@
                 
                 <div class="subsection">
                     <h3>Functional Specification</h3>
-                    <p>The smart locker operates on a state-based model:</p>
+                    <p>The access control system follows a structured state machine model:</p>
                     <ul>
-                        <li><strong>Idle State:</strong> The locker remains locked and waits for a remote input.</li>
-                        <li><strong>Authentication State:</strong> The system verifies the received signal from an IR remote against stored valid signals.</li>
-                        <li><strong>Unlock State:</strong> If authentication succeeds, the locker unlocks for a set duration before relocking automatically.</li>
-                        <li><strong>Error State:</strong> If authentication fails, the locker remains locked and provides an error response.</li>
+                        <li><strong>Idle State:</strong> The system awaits user interaction. The OLED display prompts the user to enter a PIN or scan an RFID card.</li>
+                        <li><strong>Reading Input:</strong> The system reads the entered PIN via the keypad. If using a keypad, the display updates with masked input (e.g., "****").</li>
+                        <li><strong>Validating Input:</strong> The entered credentials are checked against the stored authentication database.</li>
+                        <li><strong>Access Granted:</strong> The OLED displays a success message, the buzzer sounds a confirmation tone, and the servo motor unlocks the door.</li>
+                        <li><strong>Access Denied:</strong> The OLED displays an error message, the buzzer plays an alert tone, and the system prompts the user to retry.</li>
                     </ul>
                 </div>
                 
@@ -83,11 +84,12 @@
                     </div>
                     <p>Our system comprises these core components:</p>
                     <ul>
-                        <li><strong>CC3200 Microcontroller:</strong> The core component managing authentication, communication, and control.</li>
-                        <li><strong>IR Receiver:</strong> Reads signals from an IR remote for authentication.</li>
-                        <li><strong>Solenoid Lock:</strong> Controls the physical locking mechanism.</li>
-                        <li><strong>Accelerometer:</strong> Detects unauthorized movements or tampering attempts.</li>
-                        <li><strong>AWS IoT Integration:</strong> Logs locker status (locked/unlocked/tampered) and allows remote monitoring.</li>
+                        <li><strong>CC3200 Microcontroller:</strong> The central processing unit that handles authentication and controls peripheral devices.</li>
+                        <li><strong>Keypad:</strong> Used to input the PIN code for authentication.</li>
+                        <li><strong>RFID Scanner:</strong> An alternative authentication method that scans RFID cards (partially implemented).</li>
+                        <li><strong>OLED Display:</strong> Provides real-time feedback to the user, displaying prompts and authentication status.</li>
+                        <li><strong>Servo Motor:</strong> Controls the locking and unlocking mechanism of the door.</li>
+                        <li><strong>Buzzer:</strong> Provides audio feedback to indicate success or failure of authentication.</li>
                     </ul>
                 </div>
             </div>
@@ -101,62 +103,62 @@
                 <div class="implementation-details">
                     <div class="detail-card">
                         <h3>Hardware Implementation</h3>
-                        <p>The physical locker mechanism consists of a solenoid lock controlled by the CC3200 through a transistor circuit. The IR receiver is connected to GPIO pins for signal processing, while the accelerometer communicates via I2C protocol to detect tampering attempts.</p>
+                        <p>The physical locking mechanism uses a servo motor with a custom-made lever system created from a metal pick. The keypad is connected to GPIO pins in a matrix configuration, while the OLED display operates via SPI protocol. We used four GPIO pins for keypad rows and four for columns, with PIN_64 dedicated to servo control.</p>
                     </div>
                     <div class="detail-card">
                         <h3>Software Implementation</h3>
-                        <p>The firmware is structured around a state machine that handles authentication, locking/unlocking, and error conditions. The CC3200's WiFi capabilities are utilized to connect to AWS IoT, where MQTT protocol is used to publish status updates and receive commands if needed.</p>
+                        <p>The firmware is structured around a state machine that handles authentication, locking/unlocking, and error conditions. We implemented keypad scanning with debounce filtering, secure PIN validation, and display buffer management for visual feedback. While we designed AWS IoT integration, this feature was only partially implemented in the final prototype.</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="tech-stack">
-            <div class="container">
-                <h2>Technology Stack</h2>
-                <div class="tech-icons">
-                    <div class="tech-icon">
-                        <img src="https://mm.digikey.com/Volume0/opasdata/d220001/medias/images/24/MFG_CC3200-LAUNCHXL.jpg" alt="CC3200">
-                        <span>CC3200 LaunchPad</span>
-                    </div>
-                    <div class="tech-icon">
-                        <img src="https://figmaresource.com/wp-content/uploads/2024/05/AWS-Marketplace-Logo-PNG-to-svg-1.svg" alt="AWS IoT">
-                        <span>AWS IoT</span>
-                    </div>
-                    <div class="tech-icon">
-                        <img src="https://wallpapercave.com/wp/wp4521296.jpg" alt="C Programming">
-                        <span>C Programming</span>
-                    </div>
-                    <div class="tech-icon">
-                        <img src="https://openautomationsoftware.com/wp-content/uploads/2016/05/MQTT-icon.png" alt="MQTT">
-                        <span>MQTT Protocol</span>
-                    </div>
-                    <div class="tech-icon">
-                        <img src="https://yt3.googleusercontent.com/XtyMRzXYv05ezmClyD0qJAo6a3-xk0dxJGtGdbsxxRFxpwVdJCTN8LJFlLG0kazTLMN2vgKzDQ=s900-c-k-c0x00ffffff-no-rj" alt="OLED">
-                        <span>OLED</span>
-                    </div>
-                </div>
+<section class="tech-stack">
+    <div class="container">
+        <h2>Technology Stack</h2>
+        <div class="tech-icons">
+            <div class="tech-icon">
+                <img src="https://mm.digikey.com/Volume0/opasdata/d220001/medias/images/24/MFG_CC3200-LAUNCHXL.jpg" alt="CC3200">
+                <span>CC3200 LaunchPad</span>
             </div>
-        </section>
+            <div class="tech-icon">
+                <img src="https://figmaresource.com/wp-content/uploads/2024/05/AWS-Marketplace-Logo-PNG-to-svg-1.svg" alt="AWS IoT">
+                <span>AWS IoT</span>
+            </div>
+            <div class="tech-icon">
+                <img src="https://wallpapercave.com/wp/wp4521296.jpg" alt="C Programming">
+                <span>C Programming</span>
+            </div>
+            <div class="tech-icon">
+                <img src="https://openautomationsoftware.com/wp-content/uploads/2016/05/MQTT-icon.png" alt="MQTT">
+                <span>MQTT Protocol</span>
+            </div>
+            <div class="tech-icon">
+                <img src="https://yt3.googleusercontent.com/XtyMRzXYv05ezmClyD0qJAo6a3-xk0dxJGtGdbsxxRFxpwVdJCTN8LJFlLG0kazTLMN2vgKzDQ=s900-c-k-c0x00ffffff-no-rj" alt="OLED">
+                <span>OLED</span>
+            </div>
+        </div>
+    </div>
+</section>
 
         <section class="challenges">
             <div class="container">
                 <h2>Challenges & Solutions</h2>
                 <div class="challenge-cards">
                     <div class="challenge-card">
-                        <h3>IR Signal Decoding</h3>
-                        <p>Challenge: Accurately decoding IR signals from different remote controls.</p>
-                        <p>Solution: Implemented a robust IR library with error checking and signal validation.</p>
+                        <h3>Wi-Fi Connection Issues</h3>
+                        <p>Challenge: Getting the Wi-Fi module to connect properly to AWS services.</p>
+                        <p>Solution: We attempted various approaches including firewall settings, security protocols, and power supply troubleshooting, but were only able to establish partial connectivity.</p>
                     </div>
                     <div class="challenge-card">
-                        <h3>Power Management</h3>
-                        <p>Challenge: Ensuring the locking mechanism operates reliably with limited power.</p>
-                        <p>Solution: Designed an efficient power control circuit with capacitor-based energy storage.</p>
+                        <h3>RFID Scanner Integration</h3>
+                        <p>Challenge: Getting consistent readings from the RFID scanner.</p>
+                        <p>Solution: We tested different RFID modules and adjusted antenna positioning, but the RFID functionality remained only partially implemented.</p>
                     </div>
                     <div class="challenge-card">
-                        <h3>Cloud Connectivity</h3>
-                        <p>Challenge: Maintaining stable AWS IoT connection with minimal latency.</p>
-                        <p>Solution: Implemented connection recovery mechanisms and local caching of critical operations.</p>
+                        <h3>Hardware Debugging</h3>
+                        <p>Challenge: Multiple issues including servo motor control, keypad input, and OLED display initialization.</p>
+                        <p>Solution: We refined our PWM settings, improved debounce logic, and corrected wiring and library configurations to resolve most hardware issues.</p>
                     </div>
                 </div>
             </div>
@@ -165,13 +167,14 @@
         <section class="future-work">
             <div class="container">
                 <h2>Future Work</h2>
-                <p>Several enhancements could further improve the Smart Locker System:</p>
+                <p>Several enhancements we'd like to implement in future iterations:</p>
                 <ul>
-                    <li>Smartphone app for remote control and monitoring</li>
-                    <li>Biometric authentication options (fingerprint, facial recognition)</li>
-                    <li>Machine learning for usage pattern recognition and anomaly detection</li>
-                    <li>Battery backup system for operation during power outages</li>
-                    <li>Integration with other smart home/building management systems</li>
+                    <li>Fully implement AWS IoT and RFID authentication for remote monitoring and contactless access</li>
+                    <li>Improve security features (encrypting PIN inputs, multi-factor authentication, failed login attempt lockout)</li>
+                    <li>Enhance hardware efficiency (low-power mode, optimized servo response, electromagnetic lock upgrade)</li>
+                    <li>Expand connectivity (mobile app/web dashboard, Bluetooth backup communication)</li>
+                    <li>Integrate additional sensors (motion sensors, door open/close sensors, fingerprint scanner)</li>
+                    <li>Improve user interface (enhanced OLED display feedback, LED status indicators)</li>
                 </ul>
             </div>
         </section>
@@ -184,6 +187,7 @@
                         <tr>
                             <th>Component</th>
                             <th>Quantity</th>
+                            <th>Cost ($)</th>
                             <th>Source</th>
                         </tr>
                     </thead>
@@ -191,27 +195,62 @@
                         <tr>
                             <td>CC3200 LaunchPad</td>
                             <td>1</td>
+                            <td>0.00</td>
                             <td>Provided in lab</td>
                         </tr>
                         <tr>
-                            <td>IR Receiver Module</td>
+                            <td>OLED Display</td>
                             <td>1</td>
+                            <td>0.00</td>
                             <td>Provided in lab</td>
                         </tr>
                         <tr>
-                            <td>Solenoid Lock</td>
+                            <td>RFID Scanner</td>
                             <td>1</td>
-                            <td>Provided in lab</td>
+                            <td>30.00</td>
+                            <td>Purchased</td>
                         </tr>
                         <tr>
-                            <td>Accelerometer Module</td>
+                            <td>Metal Lock</td>
                             <td>1</td>
-                            <td>Provided in lab</td>
+                            <td>4.00</td>
+                            <td>Purchased</td>
                         </tr>
                         <tr>
-                            <td>Jumper Wires and Misc. Components</td>
+                            <td>Servo Motor</td>
+                            <td>1</td>
+                            <td>2.00</td>
+                            <td>Purchased</td>
+                        </tr>
+                        <tr>
+                            <td>4×4 Keypad</td>
+                            <td>1</td>
+                            <td>2.00</td>
+                            <td>Purchased</td>
+                        </tr>
+                        <tr>
+                            <td>Jumper Wires</td>
                             <td>Various</td>
+                            <td>0.00</td>
                             <td>Provided in lab</td>
+                        </tr>
+                        <tr>
+                            <td>Cardboard (housing)</td>
+                            <td>1</td>
+                            <td>0.00</td>
+                            <td>Repurposed material</td>
+                        </tr>
+                        <tr>
+                            <td>Metal Pick (for lock mechanism)</td>
+                            <td>1</td>
+                            <td>0.00</td>
+                            <td>Repurposed from keyring</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Cost</strong></td>
+                            <td></td>
+                            <td><strong>$38.00</strong></td>
+                            <td></td>
                         </tr>
                     </tbody>
                 </table>
@@ -224,6 +263,7 @@
             <div class="footer-content">
                 <p>A project by Rahul Padhi and Emmanuel Agubata</p>
                 <p>UC Davis | EEC 172 | 2025</p>
+                <p>Emails: rpadhi@ucdavis.edu and eagubata@ucdavis.edu</p>
                 <div class="footer-logo">
                     <img src="https://via.placeholder.com/200x50" alt="UC Davis Electrical and Computer Engineering">
                 </div>

@@ -36,22 +36,18 @@
         <section class="video-section">
             <div class="container">
                 <div class="video-container">
-                    <!-- Replace with your actual YouTube embed code when you have it -->
-                    <div class="video-placeholder">
-                        <p>Your video will be embedded here</p>
-                        <p><small>Upload your video to YouTube and replace this placeholder with the embed code</small></p>
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                    <!-- Example of YouTube embed code: -->
-                    <!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
-                         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
-                         gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/tGeFJCpQyUY" 
+                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
+                        gyroscope; picture-in-picture" allowfullscreen></iframe>
                 </div>
             </div>
         </section>
 
         <section class="demo-features">
             <div class="container">
+                <div class="centered-logo">
+                    <img src="https://t3.ftcdn.net/jpg/11/47/69/48/360_F_1147694847_TIONF9o1e27jxFntLGcJxsqhRIoA14O4.jpg" alt="Smart Lock Logo">
+                </div>
                 <h2>Features Demonstrated</h2>
                 <div class="feature-timeline">
                     <div class="timeline-item">
@@ -62,45 +58,45 @@
                         </div>
                     </div>
                     <div class="timeline-item">
+                        <div class="time-marker">0:15</div>
+                        <div class="timeline-content">
+                            <h3>Keypad Authentication</h3>
+                            <p>Demonstration of unlocking the system using PIN code "1234D"</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
                         <div class="time-marker">0:30</div>
                         <div class="timeline-content">
-                            <h3>IR Authentication</h3>
-                            <p>Demonstration of unlocking the system using IR remote signals</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="time-marker">1:15</div>
-                        <div class="timeline-content">
                             <h3>Failed Authentication</h3>
-                            <p>Showing error handling when incorrect signals are received</p>
+                            <p>Showing error handling when incorrect PIN is entered</p>
                         </div>
                     </div>
                     <div class="timeline-item">
-                        <div class="time-marker">2:00</div>
+                        <div class="time-marker">0:45</div>
                         <div class="timeline-content">
                             <h3>Auto-Relocking</h3>
                             <p>Demonstrating how the system automatically relocks after a set time period</p>
                         </div>
                     </div>
                     <div class="timeline-item">
-                        <div class="time-marker">2:45</div>
+                        <div class="time-marker">1:00</div>
                         <div class="timeline-content">
-                            <h3>Tampering Detection</h3>
-                            <p>Showing the accelerometer-based tamper detection in action</p>
+                            <h3>OLED Display Feedback</h3>
+                            <p>Showing the user interface and different display states during authentication</p>
                         </div>
                     </div>
                     <div class="timeline-item">
-                        <div class="time-marker">3:30</div>
+                        <div class="time-marker">1:15</div>
                         <div class="timeline-content">
-                            <h3>AWS IoT Integration</h3>
-                            <p>Real-time status updates and monitoring through AWS IoT</p>
+                            <h3>Servo Motor Action</h3>
+                            <p>Close-up of the servo motor and custom lock mechanism operation</p>
                         </div>
                     </div>
                     <div class="timeline-item">
-                        <div class="time-marker">4:15</div>
+                        <div class="time-marker">1:30</div>
                         <div class="timeline-content">
                             <h3>Conclusion</h3>
-                            <p>Summary of features and potential future enhancements</p>
+                            <p>Summary of implemented features and future enhancements</p>
                         </div>
                     </div>
                 </div>
@@ -112,20 +108,20 @@
                 <h2>Technical Implementation Details</h2>
                 <div class="technical-grid">
                     <div class="tech-detail">
-                        <h3>IR Signal Processing</h3>
-                        <p>The IR receiver captures NEC protocol signals from standard remote controls. Our firmware decodes these signals and compares them against stored authorized codes.</p>
+                        <h3>Keypad Matrix Scanning</h3>
+                        <p>We implemented row-by-row scanning of the 4x4 keypad matrix with software debouncing. GPIO pins are configured as outputs for rows and inputs with pull-up for columns.</p>
                     </div>
                     <div class="tech-detail">
-                        <h3>Lock Mechanism</h3>
-                        <p>A 12V solenoid lock is controlled through a transistor circuit with flyback diode protection. The CC3200 triggers the lock via GPIO with PWM for power management.</p>
+                        <h3>Servo Motor Control</h3>
+                        <p>The servo motor is controlled through PWM signals with precise timing (1ms pulse for 0° and 2ms for 180°). A custom-made metal pick translates rotation to linear locking motion.</p>
                     </div>
                     <div class="tech-detail">
-                        <h3>Tamper Detection</h3>
-                        <p>An ADXL345 accelerometer communicates with the CC3200 over I2C protocol. It's calibrated to detect sudden movements or orientation changes that might indicate tampering.</p>
+                        <h3>OLED Display</h3>
+                        <p>The OLED display communicates via SPI protocol in Mode 0, with additional pins for Data/Command, Chip Select, and Reset. Our implementation uses a memory buffer to minimize communication overhead.</p>
                     </div>
                     <div class="tech-detail">
-                        <h3>Cloud Connectivity</h3>
-                        <p>The system connects to AWS IoT Core using MQTT protocol over TLS/SSL. X.509 certificates are used for authentication, and JSON messages carry status updates and commands.</p>
+                        <h3>Authentication System</h3>
+                        <p>Our state machine handles user input, credential validation, and access control. PIN authentication masks displayed input, and the system automatically returns to idle state after granting or denying access.</p>
                     </div>
                 </div>
             </div>
@@ -135,40 +131,71 @@
             <div class="container">
                 <h2>Key Code Highlights</h2>
                 <div class="code-snippet">
-                    <h3>IR Signal Processing</h3>
+                    <h3>Keypad Scanning</h3>
                     <pre><code>
-// IR signal decoding function
-void processIRSignal(uint32_t irCode) {
-    // Check if the code matches any authorized codes
-    for(int i = 0; i < NUM_AUTHORIZED_CODES; i++) {
-        if(irCode == authorizedCodes[i]) {
-            // Authentication successful, unlock the door
-            unlockDoor();
-            return;
+// Scan keypad to detect pressed keys
+char scanKeypad(void) {
+    char keypadLayout[4][4] = {
+        {'1', '2', '3', 'A'},
+        {'4', '5', '6', 'B'},
+        {'7', '8', '9', 'C'},
+        {'*', '0', '#', 'D'}
+    };
+    
+    // Set all rows high initially
+    GPIOPinWrite(KEYPAD_ROW_PORT, ALL_ROWS, ALL_ROWS);
+    
+    // Scan each row
+    for (int row = 0; row < 4; row++) {
+        // Set current row LOW, keep others HIGH
+        GPIOPinWrite(KEYPAD_ROW_PORT, ROW_PINS[row], 0);
+        
+        // Small delay for signal stabilization
+        UtilsDelay(100);
+        
+        // Read all columns
+        uint8_t colState = GPIOPinRead(KEYPAD_COL_PORT, ALL_COLS);
+        
+        // Check each column
+        for (int col = 0; col < 4; col++) {
+            if (!(colState & COL_PINS[col])) {
+                // Key is pressed, reset row and return key
+                GPIOPinWrite(KEYPAD_ROW_PORT, ALL_ROWS, ALL_ROWS);
+                return keypadLayout[row][col];
+            }
         }
+        
+        // Set current row back HIGH
+        GPIOPinWrite(KEYPAD_ROW_PORT, ROW_PINS[row], ROW_PINS[row]);
     }
-    // Authentication failed
-    indicateFailure();
+    
+    // No key pressed
+    return 0;
 }
                     </code></pre>
                 </div>
                 <div class="code-snippet">
-                    <h3>AWS IoT MQTT Publishing</h3>
+                    <h3>PIN Authentication</h3>
                     <pre><code>
-// Function to publish locker status to AWS IoT
-void publishStatusToAWS(LockerStatus status) {
-    char jsonBuffer[100];
+// Function to validate entered PIN
+bool validatePIN(char* enteredPIN) {
+    const char VALID_PIN[] = "1234D"; // Stored valid PIN
     
-    // Create JSON payload
-    sprintf(jsonBuffer, 
-            "{\"deviceId\":\"%s\",\"status\":\"%s\",\"timestamp\":%lu}", 
-            DEVICE_ID, 
-            statusToString(status), 
-            getTimestamp());
+    // Compare entered PIN with valid PIN
+    int i = 0;
+    while (enteredPIN[i] != '\0' && VALID_PIN[i] != '\0') {
+        if (enteredPIN[i] != VALID_PIN[i]) {
+            return false; // Mismatch found
+        }
+        i++;
+    }
     
-    // Publish to AWS IoT topic
-    MQTTClient_publishMessage(client, "lockers/status", 
-                             &jsonPayload, &deliveryToken);
+    // Check if both strings ended (same length)
+    if (enteredPIN[i] == '\0' && VALID_PIN[i] == '\0') {
+        return true; // PIN matches
+    } else {
+        return false; // Different lengths
+    }
 }
                     </code></pre>
                 </div>
@@ -185,14 +212,14 @@ void publishStatusToAWS(LockerStatus status) {
                             <i class="fas fa-user-circle"></i>
                         </div>
                         <h3>Rahul Padhi</h3>
-                        <p>Hardware design, IR signal processing, lock mechanism implementation</p>
+                        <p>Hardware design, keypad integration, servo motor control, and lock mechanism implementation</p>
                     </div>
                     <div class="team-member">
                         <div class="member-photo">
                             <i class="fas fa-user-circle"></i>
                         </div>
                         <h3>Emmanuel Agubata</h3>
-                        <p>Cloud integration, firmware development, tamper detection system</p>
+                        <p>OLED display integration, authentication system, AWS IoT design, and firmware development</p>
                     </div>
                 </div>
             </div>
@@ -201,10 +228,9 @@ void publishStatusToAWS(LockerStatus status) {
         <section class="cta-section">
             <div class="container">
                 <h2>Interested in our project?</h2>
-                <p>Check out our detailed project documentation and source code:</p>
+                <p>Check out our detailed project documentation:</p>
                 <div class="cta-buttons">
-                    <a href="#" class="cta-button"><i class="fab fa-github"></i> Source Code</a>
-                    <a href="index.html" class="cta-button secondary"><i class="fas fa-file-alt"></i> Project Documentation</a>
+                    <a href="FinalLabReport.pdf" class="cta-button secondary"><i class="fas fa-file-alt"></i> Project Documentation</a>
                 </div>
             </div>
         </section>
@@ -215,8 +241,9 @@ void publishStatusToAWS(LockerStatus status) {
             <div class="footer-content">
                 <p>A project by Rahul Padhi and Emmanuel Agubata</p>
                 <p>UC Davis | EEC 172 | 2025</p>
+                <p>Emails: rpadhi@ucdavis.edu and eagubata@ucdavis.edu</p>
                 <div class="footer-logo">
-                    <img src="https://via.placeholder.com/200x50" alt="UC Davis Electrical and Computer Engineering">
+                    UC Davis Electrical and Computer Engineering
                 </div>
             </div>
         </div>

@@ -589,3 +589,33 @@ footer {
         padding: 20px;
     }
 }
+
+/* UC Davis logo styling */
+.ucdavis-logo {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+
+.ucdavis-logo img {
+    height: 40px;
+    width: auto;
+}
+
+/* Update header for positioning */
+header {
+    position: relative;
+}
+
+/* Adjust for mobile */
+@media (max-width: 768px) {
+    .ucdavis-logo {
+        position: static;
+        margin-top: 10px;
+        text-align: center;
+    }
+    
+    header .container {
+        flex-wrap: wrap;
+    }
+}
