@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Demo - Smart Locker System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="icon-container">
+                <i class="fas fa-lock-open"></i>
+            </div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Project Description</a></li>
+                <li><a href="demo.html" class="active">Video Demo</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="demo-hero">
+            <div class="container">
+                <h1>Smart Locker System Demo</h1>
+                <p class="tagline">Watch our system in action and see the features demonstrated live</p>
+            </div>
+        </section>
+
+        <section class="video-section">
+            <div class="container">
+                <div class="video-container">
+                    <!-- Replace with your actual YouTube embed code when you have it -->
+                    <div class="video-placeholder">
+                        <p>Your video will be embedded here</p>
+                        <p><small>Upload your video to YouTube and replace this placeholder with the embed code</small></p>
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <!-- Example of YouTube embed code: -->
+                    <!-- <iframe width="100%" height="100%" src="https://www.youtube.com/embed/YOUR_VIDEO_ID" 
+                         frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
+                         gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+                </div>
+            </div>
+        </section>
+
+        <section class="demo-features">
+            <div class="container">
+                <h2>Features Demonstrated</h2>
+                <div class="feature-timeline">
+                    <div class="timeline-item">
+                        <div class="time-marker">0:00</div>
+                        <div class="timeline-content">
+                            <h3>Introduction</h3>
+                            <p>Overview of the Smart Locker System and its components</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-marker">0:30</div>
+                        <div class="timeline-content">
+                            <h3>IR Authentication</h3>
+                            <p>Demonstration of unlocking the system using IR remote signals</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-marker">1:15</div>
+                        <div class="timeline-content">
+                            <h3>Failed Authentication</h3>
+                            <p>Showing error handling when incorrect signals are received</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-marker">2:00</div>
+                        <div class="timeline-content">
+                            <h3>Auto-Relocking</h3>
+                            <p>Demonstrating how the system automatically relocks after a set time period</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-marker">2:45</div>
+                        <div class="timeline-content">
+                            <h3>Tampering Detection</h3>
+                            <p>Showing the accelerometer-based tamper detection in action</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-marker">3:30</div>
+                        <div class="timeline-content">
+                            <h3>AWS IoT Integration</h3>
+                            <p>Real-time status updates and monitoring through AWS IoT</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time-marker">4:15</div>
+                        <div class="timeline-content">
+                            <h3>Conclusion</h3>
+                            <p>Summary of features and potential future enhancements</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="technical-details">
+            <div class="container">
+                <h2>Technical Implementation Details</h2>
+                <div class="technical-grid">
+                    <div class="tech-detail">
+                        <h3>IR Signal Processing</h3>
+                        <p>The IR receiver captures NEC protocol signals from standard remote controls. Our firmware decodes these signals and compares them against stored authorized codes.</p>
+                    </div>
+                    <div class="tech-detail">
+                        <h3>Lock Mechanism</h3>
+                        <p>A 12V solenoid lock is controlled through a transistor circuit with flyback diode protection. The CC3200 triggers the lock via GPIO with PWM for power management.</p>
+                    </div>
+                    <div class="tech-detail">
+                        <h3>Tamper Detection</h3>
+                        <p>An ADXL345 accelerometer communicates with the CC3200 over I2C protocol. It's calibrated to detect sudden movements or orientation changes that might indicate tampering.</p>
+                    </div>
+                    <div class="tech-detail">
+                        <h3>Cloud Connectivity</h3>
+                        <p>The system connects to AWS IoT Core using MQTT protocol over TLS/SSL. X.509 certificates are used for authentication, and JSON messages carry status updates and commands.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="source-code">
+            <div class="container">
+                <h2>Key Code Highlights</h2>
+                <div class="code-snippet">
+                    <h3>IR Signal Processing</h3>
+                    <pre><code>
+// IR signal decoding function
+void processIRSignal(uint32_t irCode) {
+    // Check if the code matches any authorized codes
+    for(int i = 0; i < NUM_AUTHORIZED_CODES; i++) {
+        if(irCode == authorizedCodes[i]) {
+            // Authentication successful, unlock the door
+            unlockDoor();
+            return;
+        }
+    }
+    // Authentication failed
+    indicateFailure();
+}
+                    </code></pre>
+                </div>
+                <div class="code-snippet">
+                    <h3>AWS IoT MQTT Publishing</h3>
+                    <pre><code>
+// Function to publish locker status to AWS IoT
+void publishStatusToAWS(LockerStatus status) {
+    char jsonBuffer[100];
+    
+    // Create JSON payload
+    sprintf(jsonBuffer, 
+            "{\"deviceId\":\"%s\",\"status\":\"%s\",\"timestamp\":%lu}", 
+            DEVICE_ID, 
+            statusToString(status), 
+            getTimestamp());
+    
+    // Publish to AWS IoT topic
+    MQTTClient_publishMessage(client, "lockers/status", 
+                             &jsonPayload, &deliveryToken);
+}
+                    </code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="team">
+            <div class="container">
+                <h2>Project Team</h2>
+                <div class="team-members">
+                    <div class="team-member">
+                        <div class="member-photo">
+                            <!-- Replace with actual photos if available -->
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h3>Rahul Padhi</h3>
+                        <p>Hardware design, IR signal processing, lock mechanism implementation</p>
+                    </div>
+                    <div class="team-member">
+                        <div class="member-photo">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <h3>Emmanuel Agubata</h3>
+                        <p>Cloud integration, firmware development, tamper detection system</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Interested in our project?</h2>
+                <p>Check out our detailed project documentation and source code:</p>
+                <div class="cta-buttons">
+                    <a href="#" class="cta-button"><i class="fab fa-github"></i> Source Code</a>
+                    <a href="index.html" class="cta-button secondary"><i class="fas fa-file-alt"></i> Project Documentation</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>A project by Rahul Padhi and Emmanuel Agubata</p>
+                <p>UC Davis | EEC 172 | 2025</p>
+                <div class="footer-logo">
+                    <img src="https://via.placeholder.com/200x50" alt="UC Davis Electrical and Computer Engineering">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
